@@ -82,22 +82,22 @@ log.debug("Loading done.")
 base = os.path.splitext(inFN)[0]
 
 if   cmd == "makeTrackSet":
-  anno.makeTrackSet(base,ucsc=args.ucsc)
+  gff.makeTrackSet(base,ucsc=args.ucsc)
 if   cmd == "makePipelineSet":
-  anno.makePipelineSet(base,ucsc=args.ucsc)
+  gff.makePipelineSet(base,ucsc=args.ucsc)
 elif cmd == "makeAnno":
   gff.makeAnno(args.category,args.ucsc,sys.stdout)
 elif cmd == "hasName":
-  anno.hasName(sys.stdout)
+  gff.hasName(sys.stdout)
 elif cmd == "hasFullName":
-  anno.hasFullName(sys.stdout)
+  gff.hasFullName(sys.stdout)
 elif cmd == "topLevel":
   gff.topLevelTypes(sys.stdout)
 elif cmd == "idParents":
   gff.parentTypes(sys.stdout)
 elif cmd == "consistent":
-  anno.checkConsistent(sys.stdout)
+  gff.checkConsistent(sys.stdout)
 elif cmd == "stats":
-  anno.stats(sys.stdout)
+  gff.stats(sys.stdout)
 elif cmd == "maxKids":
-  anno.maxKids(sys.stdout)
+  gff.maxKids(sys.stdout)
