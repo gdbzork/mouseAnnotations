@@ -1,0 +1,103 @@
+#!/usr/bin/env python3
+
+import sys
+import os.path
+import argparse
+import logging
+
+from mouse.gffFile import GffFile
+
+################################################################################
+#
+# Option Processing
+#
+
+def logSetup():
+  logging.basicConfig(level=logging.DEBUG,
+           format="%(asctime)s %(funcName)s %(levelname)s: %(message)s")
+  return logging.getLogger()
+
+def processOptions(cmdLine):
+  p = argparse.ArgumentParser(description="Mess with an annotation file")
+  sp = p.add_subparsers(dest="command")
+
+  p_makePipe = sp.add_parser("makePipelineSet",description="pipeline files")
+  p_makePipe.add_argument("anno",action="store")
+  p_makePipe.add_argument("--ucsc",action="store_true")
+
+  p_makeTrack = sp.add_parser("makeTrackSet",description="bed files for UCSC")
+  p_makeTrack.add_argument("anno",action="store")
+  p_makeTrack.add_argument("--ucsc",action="store_true")
+
+  p_makeAnno = sp.add_parser("makeAnno",description="generate annotation file")
+  p_makeAnno.add_argument("anno",action="store")
+  p_makeAnno.add_argument("--ucsc",action="store_true")
+  p_makeAnno.add_argument("--category",action="store")
+
+  p_topLevel = sp.add_parser("topLevel",description="types without parents")
+  p_topLevel.add_argument("anno",action="store")
+
+  p_parents = sp.add_parser("idParents",description="what types have parents")
+  p_parents.add_argument("anno",action="store")
+
+  p_names = sp.add_parser("hasName",description="what types have names")
+  p_names.add_argument("anno",action="store")
+
+  p_fnames = sp.add_parser("hasFullName",description="what have full names")
+  p_fnames.add_argument("anno",action="store")
+
+  p_cons = sp.add_parser("consistent",description="does file seem consistent")
+  p_cons.add_argument("anno",action="store")
+
+  p_stats = sp.add_parser("stats",description="See the basic numbers")
+  p_stats.add_argument("anno",action="store")
+
+  p_max = sp.add_parser("maxKids",description="max kids per type")
+  p_max.add_argument("anno",action="store")
+
+  return p.parse_args(cmdLine)
+
+################################################################################
+#
+# loader
+#
+
+def load(gff,fn):
+  fd = GffFile.open(fn)
+  gff.load(fn,fd)
+  
+################################################################################
+#
+# Main
+#
+
+log = logSetup()
+args = processOptions(sys.argv[1:])
+cmd = args.command
+inFN = args.anno
+log.debug("Loading '%s'..." % (inFN,))
+gff = GffFile()
+load(gff,inFN)
+log.debug("Loading done.")
+base = os.path.splitext(inFN)[0]
+
+if   cmd == "makeTrackSet":
+  anno.makeTrackSet(base,ucsc=args.ucsc)
+if   cmd == "makePipelineSet":
+  anno.makePipelineSet(base,ucsc=args.ucsc)
+elif cmd == "makeAnno":
+  gff.makeAnno(args.category,args.ucsc,sys.stdout)
+elif cmd == "hasName":
+  anno.hasName(sys.stdout)
+elif cmd == "hasFullName":
+  anno.hasFullName(sys.stdout)
+elif cmd == "topLevel":
+  gff.topLevelTypes(sys.stdout)
+elif cmd == "idParents":
+  gff.parentTypes(sys.stdout)
+elif cmd == "consistent":
+  anno.checkConsistent(sys.stdout)
+elif cmd == "stats":
+  anno.stats(sys.stdout)
+elif cmd == "maxKids":
+  anno.maxKids(sys.stdout)
